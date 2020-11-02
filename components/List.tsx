@@ -1,15 +1,17 @@
+import { Empty } from "antd";
 import { useState } from "react";
 
-type Props<T extends Record<string, any>> = {
+type Props<T extends Record<string, unknown>> = {
   renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactElement
   items: Array<T>,
   itemHeight: number;
   visibleItemSize: number;
   onScrollToBottom?: () =>void;
+  bottomOffset?: number;
 }
 
-export default function List<T extends Record<string, any>>(props: Props<T>) {
-  const {visibleItemSize, itemHeight, items, renderItem, onScrollToBottom} = props;
+export default function List<T extends Record<string, unknown>>(props: Props<T>) {
+  const {visibleItemSize, itemHeight, items, renderItem, onScrollToBottom, bottomOffset = 0} = props;
   const [index, setIndex] = useState(0);
   const onScroll = e => {
     const {
@@ -17,12 +19,17 @@ export default function List<T extends Record<string, any>>(props: Props<T>) {
       scrollHeight,
       clientHeight,
     } = e.target;
-    if (scrollHeight - scrollTop === clientHeight ) {
-      onScrollToBottom && onScrollToBottom();
-    }
     const currentIndex = Math.floor(scrollTop / itemHeight);
     setIndex(currentIndex);
+    if (scrollHeight - scrollTop - bottomOffset <= clientHeight ) {
+      onScrollToBottom && onScrollToBottom();
+    }
   }
+
+  if (!items.length) {
+    return <Empty style={{padding: 64}} description={null}/>;
+  }
+
   return (
     <div style={{
         height: visibleItemSize * itemHeight,
