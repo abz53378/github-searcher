@@ -6,11 +6,11 @@ type Props<T extends Record<string, unknown>> = {
   items: Array<T>,
   itemHeight: number;
   windowHeight: number;
-  onScroll?: ({startIndex: number}) =>void;
+  onScroll?: ({ startIndex: number }) => void;
 }
 
 export default function List<T extends Record<string, unknown>>(props: Props<T>) {
-  const {windowHeight, itemHeight, items, renderItem, onScroll} = props;
+  const { windowHeight, itemHeight, items, renderItem, onScroll } = props;
   const [index, setIndex] = useState(0);
   const renderItemSize = Math.ceil(windowHeight / itemHeight) + 1;
   const handleScroll = e => {
@@ -25,14 +25,14 @@ export default function List<T extends Record<string, unknown>>(props: Props<T>)
   }
 
   if (!items.length) {
-    return <Empty style={{padding: 64, background: 'fff', margin: 0}} description={'No data'}/>;
+    return <Empty style={{ padding: 64, background: 'fff', margin: 0 }} description={'No data'} />;
   }
 
   return (
     <div style={{
-        height: windowHeight,
-        overflow: "auto"
-      }}
+      height: windowHeight,
+      overflow: "auto"
+    }}
       onScroll={handleScroll}
     >
       <div style={{
@@ -40,7 +40,7 @@ export default function List<T extends Record<string, unknown>>(props: Props<T>)
         height: items.length * itemHeight
       }}>
         {items.slice(index, index + renderItemSize)
-          .map((item, i) => renderItem(item, index + i, {height: itemHeight, position: 'absolute', width: '100%', top: (index + i) * itemHeight}))
+          .map((item, i) => renderItem(item, index + i, { height: itemHeight, position: 'absolute', width: '100%', top: (index + i) * itemHeight }))
         }
       </div>
 

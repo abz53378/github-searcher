@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSWRInfinite } from "swr";
-import { Input, Card, Typography, Alert, Spin} from 'antd';
-import {GithubOutlined, LoadingOutlined} from '@ant-design/icons';
+import { Input, Card, Typography, Alert, Spin } from 'antd';
+import { GithubOutlined, LoadingOutlined } from '@ant-design/icons';
 import debounce from 'lodash.debounce';
 import List from "./List";
 const { Title, Paragraph } = Typography;
@@ -14,11 +14,11 @@ const fetcher = url => fetch(url).then(res => {
 
 const renderItem = (item, i, style) => (
   <Card
-    style={{...style}}
+    style={{ ...style }}
     size="small"
     key={i}
   >
-    <Title level={5} style={{margin: 0}}>{item.name}</Title>
+    <Title level={5} style={{ margin: 0 }}>{item.name}</Title>
     <Paragraph>{item.content}</Paragraph>
   </Card>
 )
@@ -40,7 +40,7 @@ export default function GithubSeacher() {
     setRepo(e.target.value);
     setSize(1); //reset size
   }, 700);
-  const fetchMore = ({startIndex}: {startIndex: number}) => {
+  const fetchMore = ({ startIndex }: { startIndex: number }) => {
     const currentSize = data.reduce((result, page) => result + page.items.length, 0);
     if (startIndex > currentSize - 20 && !isValidating) {
       setSize(size + 1);
@@ -48,32 +48,32 @@ export default function GithubSeacher() {
   };
   return (
     <>
-      <Input size="large" prefix={<GithubOutlined />} placeholder=" Input repository name" onChange={onChange} style={{ width: '100%' }}/>
+      <Input size="large" prefix={<GithubOutlined />} placeholder=" Input repository name" onChange={onChange} style={{ width: '100%' }} />
       {
         error ? (
           <Alert
-            style={{marginTop: 24}}
+            style={{ marginTop: 24 }}
             message="Error"
             description={error}
             type="error"
             showIcon
           />
         ) : (
-          <Spin
-            indicator={antIcon}
-            spinning={isValidating && size === 1}
-          >
-            <List
-              renderItem={renderItem}
-              items={data.map(item => item.items || []).flat()}
-              itemHeight={80}
-              windowHeight={320}
-              onScroll={fetchMore}
-            />
-          </Spin>
-        )
+            <Spin
+              indicator={antIcon}
+              spinning={isValidating && size === 1}
+            >
+              <List
+                renderItem={renderItem}
+                items={data.map(item => item.items || []).flat()}
+                itemHeight={80}
+                windowHeight={320}
+                onScroll={fetchMore}
+              />
+            </Spin>
+          )
       }
-     
+
     </>
   );
 }
