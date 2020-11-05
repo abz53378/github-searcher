@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { useSWRInfinite } from "swr";
-import { Input, Card, Typography, Alert, Spin } from 'antd';
+import { Input, Alert, Spin } from 'antd';
 import { GithubOutlined, LoadingOutlined } from '@ant-design/icons';
+import GithubRepo, { GithubRepoType } from './GithubRepo';
 import debounce from 'lodash.debounce';
 import List from "./List";
-const { Title, Paragraph } = Typography;
+
+type GithubRepoResult = {
+  total_count: number,
+  items: Array<GithubRepoType>
+}
+
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const fetcher = url => fetch(url).then(res => {
@@ -12,20 +18,13 @@ const fetcher = url => fetch(url).then(res => {
   return res.json();
 });
 
-const renderItem = (item, i, style) => (
-  <Card
-    style={{ ...style }}
-    size="small"
-    key={i}
-  >
-    <Title level={5} style={{ margin: 0 }}>{item.name}</Title>
-    <Paragraph>{item.content}</Paragraph>
-  </Card>
+const renderItem = (item: GithubRepoType, i: number, style: React.CSSProperties) => (
+  <GithubRepo item={item} key={i} style={style} />
 )
 
 export default function GithubSeacher() {
   const [repo, setRepo] = useState("");
-  const { data, error, size, isValidating, setSize } = useSWRInfinite(
+  const { data, error, size, isValidating, setSize } = useSWRInfinite<GithubRepoResult>(
     index => {
       if (!repo) return null;
       return `https://api.github.com/search/repositories?q=${repo}&page=${index +
@@ -63,11 +62,12 @@ export default function GithubSeacher() {
               indicator={antIcon}
               spinning={isValidating && size === 1}
             >
-              <List
+              <List<GithubRepoType>
+                key={repo} // remount component when repo changes
                 renderItem={renderItem}
                 items={data.map(item => item.items || []).flat()}
-                itemHeight={80}
-                windowHeight={320}
+                itemHeight={100}
+                windowHeight={500}
                 onScroll={fetchMore}
               />
             </Spin>
